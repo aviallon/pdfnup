@@ -14,34 +14,25 @@ Mathieu Fenniak, see http://pybrary.net/pyPdf.
 For further information please look into the file README.txt!
 """
 
-
-import os
-import sys
-import math
-import zlib
 import base64
-import types
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
+import math
+import os
+import zlib
+from io import BytesIO, IOBase
 
 try:
-    from pyPdf import PdfFileWriter, PdfFileReader
-    from pyPdf.pdf import PageObject, ContentStream
-    from pyPdf.generic import \
+    from PyPDF2 import PdfFileWriter, PdfFileReader
+    from PyPDF2.pdf import PageObject, ContentStream
+    from PyPDF2.generic import \
         NameObject, DictionaryObject, ArrayObject, FloatObject
 except ImportError:
-    _MSG = "Please install pyPdf first, see http://pybrary.net/pyPdf"
+    _MSG = "Please install PyPDF first."
     raise RuntimeError(_MSG)
-
 
 __version__ = "0.4.1"
 __license__ = "GPL 3"
 __author__ = "Dinu Gherman"
 __date__ = "2009-07-06"
-
 
 # one empty A4 page as base64-encoded zipped PDF file
 _mtA4PdfZip64 = """\
@@ -62,11 +53,11 @@ ZmFwL+aYJQ6ZkCimSVbxsI8eQK30MVj8+WNwdISXF3YINutfW1pBXdfZ1DHNqe26/eOpbTvx1Pba
 U7ttv8WBNTUtGx8HH6v2XwP+V/YNqF1F0eoEe8Wth1cHuPnbOPpKobPpJ5LIbLMsx1PfvdrpG7z6
 fgMis+cW
 """
-_mtA4Pdf = zlib.decompress(base64.decodestring(_mtA4PdfZip64))
+_mtA4Pdf = zlib.decompress(base64.decodebytes(_mtA4PdfZip64.encode()))
 
 
 def isSquare(n):
-    "Is this a square number?"
+    """Is this a square number?"""
 
     s = math.sqrt(n)
     lower, upper = math.floor(s), math.ceil(s)
@@ -75,32 +66,32 @@ def isSquare(n):
 
 
 def isHalfSquare(n):
-    "Is this a square number, divided by 2?"
+    """Is this a square number, divided by 2?"""
 
     return isSquare(n * 2)
 
 
 def calcScalingFactors(w, h, wp, hp):
-    wp, hp = map(float, (wp, hp))
+    wp, hp = list(map(float, (wp, hp)))
 
-    if w == None:
-        xscale = h/hp
-        yscale = h/hp
-    elif h == None:
-        xscale = w/wp
-        yscale = w/wp
+    if w is None:
+        xscale = h / hp
+        yscale = h / hp
+    elif h is None:
+        xscale = w / wp
+        yscale = w / wp
     else:
-        xscale = w/wp
-        yscale = h/hp
+        xscale = w / wp
+        yscale = h / hp
 
     return xscale, yscale
 
 
 def calcRects(pageSize, numTiles, dirs="RD"):
-    "Return list of sub rects for some rect."
+    """Return list of sub rects for some rect."""
 
-    allowdDirs = [x+y for x in "RL" for y in "UD"]
-    allowdDirs += [y+x for x in "RL" for y in "UD"]
+    allowdDirs = [x + y for x in "RL" for y in "UD"]
+    allowdDirs += [y + x for x in "RL" for y in "UD"]
     assert dirs in allowdDirs
 
     width, height = pageSize
@@ -109,44 +100,44 @@ def calcRects(pageSize, numTiles, dirs="RD"):
 
     if isSquare(n):
         s = math.sqrt(n)
-        w, h = float(width)/float(s), float(height)/float(s)
+        w, h = float(width) / float(s), float(height) / float(s)
         if "R" in dirs:
-            xr = range(0, int(s))
+            xr = list(range(0, int(s)))
         elif "L" in dirs:
-            xr = range(int(s)-1, -1, -1)
+            xr = list(range(int(s) - 1, -1, -1))
         if "D" in dirs:
-            yr = range(int(s)-1, -1, -1)
+            yr = list(range(int(s) - 1, -1, -1))
         elif "U" in dirs:
-            yr = range(0, int(s))
-        xs = [i*w for i in xr]
-        ys = [j*h for j in yr]
+            yr = list(range(0, int(s)))
+        xs = [i * w for i in xr]
+        ys = [j * h for j in yr]
     elif isHalfSquare(n):
         # should issue a warning for page ratios different from 1:sqr(2)
-        s = math.sqrt(2*n)
+        s = math.sqrt(2 * n)
         if width > height:
-            w, h = float(width)/float(s), float(height)/float(s)*2
+            w, h = float(width) / float(s), float(height) / float(s) * 2
             if "R" in dirs:
-                xr = range(0, int(s))
+                xr = list(range(0, int(s)))
             elif "L" in dirs:
-                xr = range(int(s)-1, -1, -1)
+                xr = list(range(int(s) - 1, -1, -1))
             if "D" in dirs:
-                yr = range(int(s/2)-1, -1, -1)
+                yr = list(range(int(s / 2) - 1, -1, -1))
             elif "U" in dirs:
-                yr = range(0, int(s/2))
-            xs = [i*w for i in xr]
-            ys = [j*h for j in yr]
+                yr = list(range(0, int(s / 2)))
+            xs = [i * w for i in xr]
+            ys = [j * h for j in yr]
         else:
-            w, h = float(width)/float(s)*2, float(height)/float(s)
+            w, h = float(width) / float(s) * 2, float(height) / float(s)
             if "R" in dirs:
-                xr = range(0, int(s/2))
+                xr = list(range(0, int(s / 2)))
             elif "L" in dirs:
-                xr = range(int(s/2)-1, -1, -1)
+                xr = list(range(int(s / 2) - 1, -1, -1))
             if "D" in dirs:
-                yr = range(int(s)-1, -1, -1)
+                yr = list(range(int(s) - 1, -1, -1))
             elif "U" in dirs:
-                yr = range(0, int(s))
-            xs = [i*w for i in xr]
-            ys = [j*h for j in yr]
+                yr = list(range(0, int(s)))
+            xs = [i * w for i in xr]
+            ys = [j * h for j in yr]
 
     # decide order (first x, then y or first y then x)
     if dirs in "RD LD RU LU".split():
@@ -158,10 +149,10 @@ def calcRects(pageSize, numTiles, dirs="RD"):
 
 
 def exP1multiN(pdf, newPageSize, n):
-    "Extract page 1 of a PDF file, copy it n times resized."
+    """Extract page 1 of a PDF file, copy it n times resized."""
 
     # create a file-like buffer object containing PDF code
-    buf = StringIO()
+    buf = BytesIO()
     buf.write(pdf)
 
     # extract first page and resize it as desired
@@ -175,7 +166,7 @@ def exP1multiN(pdf, newPageSize, n):
         output.addPage(page1)
 
     # create a file-like buffer object to hold the new PDF code
-    buf2 = StringIO()
+    buf2 = BytesIO()
     output.write(buf2)
     buf2.seek(0)
 
@@ -183,9 +174,9 @@ def exP1multiN(pdf, newPageSize, n):
 
 
 def isFileLike(obj):
-    "Is this a file-like object?"
+    """Is this a file-like object?"""
 
-    if type(obj) == types.FileType:
+    if isinstance(obj, IOBase):
         return True
     if set("read seek close".split()).issubset(set(dir(obj))):
         return True
@@ -194,7 +185,7 @@ def isFileLike(obj):
 
 
 def generateNup(inPathOrFile, n, outPathPatternOrFile=None, dirs="RD",
-        verbose=False):
+                verbose=False):
     """Generate a N-up document version.
 
     If outPathPatternOrFile is None, the output will be written
@@ -209,17 +200,17 @@ def generateNup(inPathOrFile, n, outPathPatternOrFile=None, dirs="RD",
     if isFileLike(ipof):
         inFile = ipof
         if oppof is None:
-            raise AssertionError, "Must specify output for file input!"
+            raise AssertionError("Must specify output for file input!")
         elif isFileLike(oppof):
             outFile = oppof
-        elif type(oppof) in types.StringTypes:
+        elif type(oppof) in (str,):
             outPath = oppof
             outFile = open(outPath, "wb")
-    elif type(ipof) in types.StringTypes:
+    elif type(ipof) in (str,):
         inFile = open(ipof, "rb")
         if isFileLike(oppof):
             outFile = oppof
-        elif oppof is None or type(oppof) in types.StringTypes:
+        elif oppof is None or type(oppof) in (str,):
             if oppof is None:
                 oppof = "%(dirname)s/%(base)s-%(n)dup%(ext)s"
             aDict = {
@@ -227,7 +218,7 @@ def generateNup(inPathOrFile, n, outPathPatternOrFile=None, dirs="RD",
                 "basename": os.path.basename(inPathOrFile),
                 "base": os.path.basename(os.path.splitext(inPathOrFile)[0]),
                 "ext": os.path.splitext(inPathOrFile)[1],
-                "n":n,
+                "n": n,
             }
             outPath = oppof % aDict
             outPath = os.path.normpath(outPath)
@@ -243,7 +234,7 @@ def generateNup(inPathOrFile, n, outPathPatternOrFile=None, dirs="RD",
         newPageSize = oldPageSize
     elif isHalfSquare(n):
         newPageSize = oldPageSize[1], oldPageSize[0]
-    np = numPages / n + numPages % n
+    np = numPages // n + numPages % n
     buf = exP1multiN(_mtA4Pdf, newPageSize, np)
 
     # calculate mini page areas
@@ -255,13 +246,13 @@ def generateNup(inPathOrFile, n, outPathPatternOrFile=None, dirs="RD",
     for i in range(numPages):
         if i % n == 0:
             newPageNum += 1
-        op = (inPathOrFile, i, (0, 0, None, None), i/n, rects[i % n])
+        op = (inPathOrFile, i, (0, 0, None, None), i // n, rects[i % n])
         ops.append(op)
 
     srcr = srcReader = PdfFileReader(inFile)
     srcPages = [srcr.getPage(i) for i in range(srcr.getNumPages())]
 
-    if type(oppof) in types.StringTypes:
+    if type(oppof) in (str,):
         outFile = open(outPath, "rb")
     outr = outReader = PdfFileReader(buf)
     outPages = [outr.getPage(i) for i in range(outr.getNumPages())]
@@ -276,7 +267,7 @@ def generateNup(inPathOrFile, n, outPathPatternOrFile=None, dirs="RD",
 
     PO, AO, DO, NO = PageObject, ArrayObject, DictionaryObject, NameObject
 
-    for destPageNum, ops in mapping.items():
+    for destPageNum, ops in list(mapping.items()):
         for op in ops:
             inPathOrFile, srcPageNum, srcRect, destPageNum, destRect = op
             page2 = srcPages[srcPageNum]
@@ -295,7 +286,7 @@ def generateNup(inPathOrFile, n, outPathPatternOrFile=None, dirs="RD",
             for res in names.split():
                 res = "/" + res
                 new, newrename = PO._mergeResources(orgResources,
-                    page2Resources, res)
+                                                    page2Resources, res)
                 if new:
                     newResources[NO(res)] = new
                     rename.update(newrename)
@@ -311,7 +302,7 @@ def generateNup(inPathOrFile, n, outPathPatternOrFile=None, dirs="RD",
             newContentArray.append(PO._pushPopGS(orgContent, page1.pdf))
             page2Content = page2['/Contents'].getObject()
             page2Content = PO._contentStreamRename(page2Content, rename,
-                page1.pdf)
+                                                   page1.pdf)
             page2Content = ContentStream(page2Content, page1.pdf)
             page2Content.operations.insert(0, [[], "q"])
 
@@ -322,7 +313,7 @@ def generateNup(inPathOrFile, n, outPathPatternOrFile=None, dirs="RD",
                 rotation = 0
             if rotation in (180, 270):
                 dw, dh = destWidth, destHeight
-                arr = [-xScale, 0, 0, -yScale, destX+dw, destY+dh]
+                arr = [-xScale, 0, 0, -yScale, destX + dw, destY + dh]
             elif rotation in (0, 90):
                 arr = [xScale, 0, 0, yScale, destX, destY]
             else:
@@ -338,12 +329,14 @@ def generateNup(inPathOrFile, n, outPathPatternOrFile=None, dirs="RD",
 
         output.addPage(page1)
 
-    if type(oppof) in types.StringTypes:
+    if type(oppof) in (str,):
         outFile = open(outPath, "wb")
     output.write(outFile)
 
     if verbose:
-        if type(oppof) in types.StringTypes:
-            print "written: %s" % outPath
+        if type(oppof) in (str,):
+            print("written: %s" % outPath)
         elif isFileLike:
-            print "written to file-like input parameter"
+            print("written to file-like input parameter")
+
+    return outPath
