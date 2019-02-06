@@ -5,15 +5,14 @@ import os
 import sys
 
 import ez_setup
+
 ez_setup.use_setuptools()
 from setuptools import setup
 
-
-__version__ = "0.4.1"
+__version__ = "1.0.0"
 __license__ = "GPL 3"
 __author__ = "Dinu Gherman"
 __date__ = "2009-07-06"
-
 
 long_description = """\
 `Pdfnup` is a Python module and command-line tool for layouting multiple 
@@ -102,25 +101,25 @@ classifiers = [
 baseURL = "http://www.dinu-gherman.net/"
 
 setup(
-    name = 'pdfnup',
-    version = __version__,
-    description = 'Layout multiple pages per sheet of a PDF document.',
-    long_description = long_description,
-    date = __date__,
-    author = __author__,
-    author_email = "@".join(["gherman", "darwin.in-berlin.de"]),
-    maintainer = __author__,
-    maintainer_email = "@".join(["gherman", "darwin.in-berlin.de"]),
-    license = __license__,
-    platforms = ['Posix', 'Windows'],
-    keywords = ['PDF', 'minimizig pages'],
-    url = baseURL,
-    download_url = baseURL + "tmp/pdfnup-%s.tar.gz" % __version__,
-    py_modules = ["pdfnup"],
-    scripts = ['pdfnup'],
-    classifiers = classifiers,
+    name='pdfnup3',
+    version=__version__,
+    description='Layout multiple pages per sheet of a PDF document.',
+    long_description=long_description,
+    date=__date__,
+    author=__author__,
+    author_email="@".join(["gherman", "darwin.in-berlin.de"]),
+    maintainer=__author__,
+    maintainer_email="@".join(["gherman", "darwin.in-berlin.de"]),
+    license=__license__,
+    platforms=['Posix', 'Windows'],
+    keywords=['PDF', 'minimizig pages'],
+    url=baseURL,
+    download_url=baseURL + "tmp/pdfnup-%s.tar.gz" % __version__,
+    py_modules=["pdfnup"],
+    scripts=['pdfnup'],
+    classifiers=classifiers,
 
     # for setuptools, only
-    zip_safe = False,
-    install_requires = ["PyPDF2"],
+    zip_safe=False,
+    install_requires=["PyPDF2"],
 )
