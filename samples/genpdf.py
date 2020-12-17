@@ -17,7 +17,7 @@ def genTestFile(path, numPages):
     for i in range(numPages):
         canv.setFont("Helvetica", size[1]*1.2)
         x, y = size[0]/2.0, size[1]*0.1
-        text = u"%s" % i
+        text = "%s" % i
         if i % 2 == 1:
             canv.setStrokeColor(black)
             canv.setFillColor(black)
@@ -40,7 +40,7 @@ def generateNumberedPages(numPages, pageSize, orientation, bgColor, outPath):
 
     for i in range(numPages):
         canv.setFont("Helvetica", 500)
-        text = u"%s" % i
+        text = "%s" % i
         if i % 2 == 0:
             canv.setStrokeColor(bgColor)
             canv.setFillColor(bgColor)
@@ -52,9 +52,9 @@ def generateNumberedPages(numPages, pageSize, orientation, bgColor, outPath):
             canv.rect(0, 0, pageSize[0], pageSize[1], stroke=True, fill=True)
             canv.setFillColor(bgColor)
         if orientation == "portrait":
-            canv.drawCentredString(pageSize[0]/2.0, pageSize[1]*0.3, u"%s" % i) 
+            canv.drawCentredString(pageSize[0]/2.0, pageSize[1]*0.3, "%s" % i) 
         elif orientation == "landscape":
-            canv.drawCentredString(pageSize[0]/2.0, pageSize[1]*0.21, u"%s" % i) 
+            canv.drawCentredString(pageSize[0]/2.0, pageSize[1]*0.21, "%s" % i) 
         canv.showPage()
         
     canv.save() 

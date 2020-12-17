@@ -10,9 +10,9 @@ import math
 import unittest
 
 try:
-    from cStringIO import StringIO
+    from io import StringIO
 except ImportError:
-    from StringIO import StringIO
+    from io import StringIO
 
 try:
     from pyPdf import PdfFileReader, PdfFileWriter
@@ -216,8 +216,8 @@ class FileLikeOutputTests(unittest.TestCase):
         generateNup(path0, n, output, verbose=False)
         output.seek(0)
         data = output.read()
-        self.assert_(data.startswith("%PDF"))
-        self.assert_(data.rstrip().endswith("%%EOF"))
+        self.assertTrue(data.startswith("%PDF"))
+        self.assertTrue(data.rstrip().endswith("%%EOF"))
         open (path1, "wb").write(data)
 
 
@@ -231,8 +231,8 @@ class FileLikeOutputTests(unittest.TestCase):
         generateNup(path0, n, output, verbose=False)
         output.close()
         data = open(path1).read()
-        self.assert_(data.startswith("%PDF"))
-        self.assert_(data.rstrip().endswith("%%EOF"))
+        self.assertTrue(data.startswith("%PDF"))
+        self.assertTrue(data.rstrip().endswith("%%EOF"))
 
 
 if __name__ == "__main__":

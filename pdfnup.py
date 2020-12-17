@@ -335,7 +335,7 @@ def generateNup(inPathOrFile, n, outPathPatternOrFile=None, dirs="RD",
 
     if verbose:
         if type(oppof) in (str,):
-            print("written: %s" % outPath)
+            print(("written: %s" % outPath))
         elif isFileLike:
             print("written to file-like input parameter")
 

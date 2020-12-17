@@ -35,7 +35,7 @@ def _showVersion():
     "Print version message and terminate."
 
     prog = os.path.basename(sys.argv[0])
-    print "%s %s" % (prog, __version__)
+    print("%s %s" % (prog, __version__))
     sys.exit()
 
 
@@ -45,10 +45,10 @@ def _showUsage():
     prog = os.path.basename(sys.argv[0])
     copyrightYear = __date__[:__date__.find("-")]
     args = (prog, __version__, __author__, copyrightYear, __license__)
-    print "%s v. %s, Copyleft by %s, %s (%s)" % args 
-    print "Make multiple pages per sheet into a new PDF file."
-    print "USAGE: %s [options] file1 [file2...]" % prog
-    print """\
+    print("%s v. %s, Copyleft by %s, %s (%s)" % args) 
+    print("Make multiple pages per sheet into a new PDF file.")
+    print("USAGE: %s [options] file1 [file2...]" % prog)
+    print("""\
 OPTIONS:
   -h --help          Prints this usage message and exits.
   -v --version       Prints version number and exits.
@@ -68,7 +68,7 @@ EXAMPLES:
 
 COPYLEFT:
   see http://www.gnu.org/copyleft/gpl.html
-""" % {"prog": prog}
+""" % {"prog": prog})
 
     sys.exit()
 
@@ -80,7 +80,7 @@ def _main():
         longOpts = "help version layout= output=".split()
         opts, args = getopt.getopt(sys.argv[1:], "hvn:l:o:V", longOpts)
     except getopt.GetoptError:
-        print "ERROR"
+        print("ERROR")
         _showUsage()
     
     stopOptions = "-v --version -h --help --verbose"
